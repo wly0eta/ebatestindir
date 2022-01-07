@@ -131,7 +131,7 @@ while True:
     subject = input("Hangi dersi istiyorsunuz : ")
     testnum = input("Test sayısı : ")
     title = findtitle(subject)
-    url = "https://odsgm.meb.gov.tr/www/11-sinif-fizik-kazanim-testleri/icerik/"+subject
+    url = "https://odsgm.meb.gov.tr/www/"+grade+"-sinif-fizik-kazanim-testleri/icerik/"+subject
     response = requests.get(url)
     html = response.content
     soup = BeautifulSoup(html,"html.parser")
@@ -141,11 +141,12 @@ while True:
         os.mkdir(title)
     os.chdir(os.path.join(path,title))
     for link in linkler:
-        if(link['href'].startswith("/destekmateryal/pdf/11kt/") and num < int(testnum)):
+        if(link['href'].startswith("/destekmateryal/pdf/"+grade+"kt/") and num < int(testnum)):
             a ="https://odsgm.meb.gov.tr"+link['href']
             num+=1
             dl =requests.get(a,allow_redirects=True)
             open(str(num)+".pdf",'wb').write(dl.content)
             print(str(num)+". test"+ os.getcwd() +" adresine indirildi.")
+    os.chdir("..")
     clearConsole()
             
