@@ -1,6 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
-import os 
+import os
+import time
+def listthesubjectsoftests(linkler):
+    num = 0
+    for link in linkler:
+        if(link['href'].startswith("/destekmateryal/pdf/"+grade+"kt/")):
+            num+=1
+            print(str(num)+". "+link.text.strip())    
 def clearConsole():
     command = 'clear'
     if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
@@ -115,6 +122,7 @@ def showsubjects(grade):
       
 path= os.getcwd()       
 while True:
+    mustwrite = []
     print(
     """
     ---------------------------------------------------------------------------
@@ -124,12 +132,13 @@ while True:
     ---------------------------------------------------------------------------
     Konulara sınıfınızı girdiğinizde ulaşacaksınız.
     ---------------------------------------------------------------------------
+    İstediğiniz testleri virgülle ayırarak yazınız örneğin 2.testten 6.teste kadar istiyorsanız 2,6 yazınız.
     """)
     
     grade = input("Kaçıncı sınıfsınız : ")
     showsubjects(int(grade))
     subject = input("Hangi dersi istiyorsunuz : ")
-    testnum = input("Test sayısı : ")
+    
     title = findtitle(subject)
     url = "https://odsgm.meb.gov.tr/www/"+grade+"-sinif-fizik-kazanim-testleri/icerik/"+subject
     response = requests.get(url)
@@ -137,16 +146,32 @@ while True:
     soup = BeautifulSoup(html,"html.parser")
     linkler = soup.find_all("a",href=True)
     num = 0
+    maxtestnum=0
+    listthesubjectsoftests(linkler)
+    testnum = input("Test sayısı : ")
+    listus = testnum.split(",")
+    firsttest = int(listus[0])
+    lasttest=int(listus[1])
+    
+    
     if not os.path.exists(title):
         os.mkdir(title)
     os.chdir(os.path.join(path,title))
     for link in linkler:
-        if(link['href'].startswith("/destekmateryal/pdf/"+grade+"kt/") and num < int(testnum)):
-            a ="https://odsgm.meb.gov.tr"+link['href']
+        if(link['href'].startswith("/destekmateryal/pdf/"+grade+"kt/")):
             num+=1
-            dl =requests.get(a,allow_redirects=True)
-            open(str(num)+".pdf",'wb').write(dl.content)
-            print(str(num)+". test"+ os.getcwd() +" adresine indirildi.")
+            if num<=int(lasttest) and num>=int(firsttest):
+                a ="https://odsgm.meb.gov.tr"+link['href']
+                dl =requests.get(a,allow_redirects=True)
+                open(str(num)+link.text.strip()+".pdf",'wb').write(dl.content)
+                written= link.text.strip()+ os.getcwd() +" adresine indirildi.\n"
+                print(link.text.strip()+ os.getcwd() +" adresine indirildi.")
+                mustwrite.append(written)
     os.chdir("..")
+    if not os.path.exists("/logs"):
+        os.mkdir("/logs")
+    with open("dosyakonumu.txt","a",encoding="utf-8") as file:
+        file.writelines(mustwrite)
+    time.sleep(3)
     clearConsole()
             
