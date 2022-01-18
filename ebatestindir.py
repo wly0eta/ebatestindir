@@ -5,9 +5,14 @@ import time
 def listthesubjectsoftests(linkler):
     num = 0
     for link in linkler:
-        if(link['href'].startswith("/destekmateryal/pdf/"+grade+"kt/")):
+
+        if(link['href'].startswith("https://cdn.eba.gov.tr/yardimcikaynaklar/2022/01/odsgm/kt/"+grade+"kt/")):
+           
+           
             num+=1
-            print(str(num)+". "+link.text.strip())    
+            if num >=2:
+                
+                print(str(num-1)+". "+link.text.strip())    
 def clearConsole():
     command = 'clear'
     if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
@@ -158,15 +163,26 @@ while True:
         os.mkdir(title)
     os.chdir(os.path.join(path,title))
     for link in linkler:
-        if(link['href'].startswith("/destekmateryal/pdf/"+grade+"kt/")):
+        if(link['href'].startswith("https://cdn.eba.gov.tr/yardimcikaynaklar/2022/01/odsgm/kt/"+grade+"kt/")):
             num+=1
             if num<=int(lasttest) and num>=int(firsttest):
-                a ="https://odsgm.meb.gov.tr"+link['href']
+                a = link['href']
                 dl =requests.get(a,allow_redirects=True)
                 open(str(num)+link.text.strip()+".pdf",'wb').write(dl.content)
                 written= link.text.strip()+ os.getcwd() +" adresine indirildi.\n"
                 print(link.text.strip()+ os.getcwd() +" adresine indirildi.")
                 mustwrite.append(written)
+    url = "https://odsgm.meb.gov.tr/www/"+grade+"sinif-tarih-kazanim-testleri/icerik/"+subject
+    response = requests.get(url)
+    htmlcd = response.content
+    soup = BeautifulSoup(htmlcd,"html.parser")
+    listindex = soup.find_all("p",{"class":"MsoNormal"})
+    for link in listindex:
+        amogus =link.find("a")
+        if amogus["href"].startswith("/kurslar/pdf/cvp/kt"):
+            a="https://odsgm.meb.gov.tr"+amogus['href'] 
+            dl = requests.get(a,allow_redirects=True)
+            open("Cevap Anahatarı.pdf","wb").write(dl.content)  
     os.chdir("..")
     if not os.path.exists("/logs"):
         os.mkdir("/logs")
