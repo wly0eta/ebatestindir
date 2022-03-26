@@ -150,7 +150,7 @@ while True:
     html = response.content
     soup = BeautifulSoup(html,"html.parser")
     linkler = soup.find_all("a",href=True)
-    num = 0
+    num = -1
     maxtestnum=0
     listthesubjectsoftests(linkler)
     testnum = input("Test sayısı : ")
@@ -165,7 +165,7 @@ while True:
     for link in linkler:
         if(link['href'].startswith("https://cdn.eba.gov.tr/yardimcikaynaklar/2022/01/odsgm/kt/"+grade+"kt/")):
             num+=1
-            if num<=int(lasttest) and num>=int(firsttest):
+            if num<int(lasttest)+1 and num>=int(firsttest):
                 a = link['href']
                 dl =requests.get(a,allow_redirects=True)
                 open(str(num)+link.text.strip()+".pdf",'wb').write(dl.content)
@@ -188,6 +188,7 @@ while True:
         os.mkdir("/logs")
     with open("dosyakonumu.txt","a",encoding="utf-8") as file:
         file.writelines(mustwrite)
+    os.chdir("..")
     time.sleep(3)
     clearConsole()
             
