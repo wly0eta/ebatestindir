@@ -125,7 +125,10 @@ def showsubjects(grade):
         """)
         
       
-path= os.getcwd()       
+initial_path= os.getcwd()
+currentpath=initial_path
+if not os.path.exists("logs"):
+    os.mkdir("logs")    
 while True:
     mustwrite = []
     print(
@@ -161,11 +164,12 @@ while True:
     
     if not os.path.exists(title):
         os.mkdir(title)
-    os.chdir(os.path.join(path,title))
+    os.chdir(os.path.join(currentpath,title))
+
     for link in linkler:
         if(link['href'].startswith("https://cdn.eba.gov.tr/yardimcikaynaklar/2022/01/odsgm/kt/"+grade+"kt/")):
             num+=1
-            if num<int(lasttest)+1 and num>=int(firsttest):
+            if num<=int(lasttest) and num>=int(firsttest):
                 a = link['href']
                 dl =requests.get(a,allow_redirects=True)
                 open(str(num)+link.text.strip()+".pdf",'wb').write(dl.content)
@@ -183,12 +187,11 @@ while True:
             a="https://odsgm.meb.gov.tr"+amogus['href'] 
             dl = requests.get(a,allow_redirects=True)
             open("Cevap Anahatarı.pdf","wb").write(dl.content)  
-    os.chdir("..")
-    if not os.path.exists("/logs"):
-        os.mkdir("/logs")
-    with open("dosyakonumu.txt","a",encoding="utf-8") as file:
-        file.writelines(mustwrite)
-    os.chdir("..")
+    os.chdir(initial_path)
+    # os.chdir("/logs")
+    # with open("dosyakonumu.txt","a",encoding="utf-8") as file:
+    #     file.writelines(mustwrite)
+    os.chdir(initial_path)
     time.sleep(3)
     clearConsole()
             
