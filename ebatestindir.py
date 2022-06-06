@@ -186,7 +186,7 @@ while True:
         if amogus["href"].startswith("/kurslar/pdf/cvp/kt"):
             a="https://odsgm.meb.gov.tr"+amogus['href'] 
             dl = requests.get(a,allow_redirects=True)
-            open("Cevap Anahatarı.pdf","wb").write(dl.content)  
+            open("Cevap Anahtarı.pdf","wb").write(dl.content)  
     os.chdir(initial_path)
     # os.chdir("/logs")
     # with open("dosyakonumu.txt","a",encoding="utf-8") as file:
